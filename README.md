@@ -3,7 +3,7 @@
 Esta documentação foi criada a fim de listar o conteúdo aprendido até aqui através do curso do professor Walmyr da Talking About Testing.
 
 ## Pré-requisitos
-- Node.js e nom
+- Node.js e npm
 - Cypress 9.5.1
 - VSCode ou outro editor de código fonte
 
