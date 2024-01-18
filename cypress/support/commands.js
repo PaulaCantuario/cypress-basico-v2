@@ -41,3 +41,18 @@ Cypress.Commands.add('fillMandatoryFieldsAndSubmit', () => {
         cy.get('.button')
         .click()
 }) 
+
+Cypress.Commands.add('fillMandatoryFields', () => {
+    cy.visit('../../src/index.html')
+    cy.get('#firstName')//o uso do # irá buscar na página o elemento cujo id seja firstName
+        .type('João Paulo')
+
+        cy.get('#lastName')
+        .type('da Silva P. Campos')
+
+        cy.get('#email')
+        .type('joaopaulospc@email.com.br')
+
+        cy.get('#open-text-area')
+        .type('Eu gostaria de mais informações sobre o serviço oferecido')
+}) 

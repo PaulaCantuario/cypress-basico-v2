@@ -247,3 +247,129 @@ describe('Central de Atendimento ao Cliente TAT', function() {
     })
     
   })
+
+  describe('Selecionando opções em campos de seleção suspensas', function() {
+    
+    it('Seleciona o produto YouTube por seu texto', function() {
+        // Supondo que o campo de seleção tenha um ID ou outro seletor exclusivo
+        cy.get('#product')
+        .select('YouTube')
+        .should('have.value','youtube')
+    })
+
+    it('Seleciona o produto Mentoria por seu valor', function() {
+        // Supondo que o campo de seleção tenha um ID ou outro seletor exclusivo
+        cy.get('#product')
+        .select('mentoria')
+        .should('have.value','mentoria')
+    })
+
+    it('Seleciona o produto Blog por seu índice', function() {
+        // Supondo que o campo de seleção tenha um ID ou outro seletor exclusivo
+        cy.get('#product')
+        .select(1)
+        .should('have.value','blog')
+    })
+    
+  })
+
+  describe('Marcando inputs do tipo radio', function() {
+    
+    it('Marca o tipo de atendimento Feedback', function() {
+       cy.get('input[type="radio"][value="feedback"]')
+       .check()
+       .should('be.checked')
+    })
+
+    it('Marca cada tipo de atendimento', function() {
+        cy.get('input[type="radio"][value="feedback"]')
+        .check()
+        .should('be.checked')
+
+        cy.get('input[type="radio"][value="ajuda"]')
+        .check()
+        .should('be.checked')
+        cy.get('input[type="radio"][value="feedback"]').should('not.be.checked')
+
+        cy.get('input[type="radio"][value="elogio"]')
+        .check()
+        .should('be.checked')
+        cy.get('input[type="radio"][value="ajuda"]').should('not.be.checked')
+     })
+
+     it('Marca cada tipo de atendimento - Otimizado', function() {
+        cy.get('input[type="radio"]')
+        .should('have.length',3)
+        .each(function($radio) {
+            cy.wrap($radio)
+            .check()
+            .should('be.checked')
+        })
+    })
+  })
+
+  describe('Marcando inputs do tipo checkbox', function() {
+    
+    it('Marca ambos checkboxes, depois desmarca o último', function() {
+        cy.get('input[type="checkbox"]')
+        .check()
+        .should('be.checked')
+        .last()
+        .uncheck()
+        .should('not.be.checked')
+    })
+
+    
+    it('Valida obrigatoriedade do campo Telefone ao marcar meio de contato como Telefone - Usando check()', function() {
+        cy.fillMandatoryFields()
+
+        cy.get('#phone-checkbox')
+        .check()
+
+        cy.get('.phone-label-span')
+        .should('be.visible')
+        .invoke('text')
+        .should('eq',' (obrigatório)')
+        
+        cy.get('.button')
+        .click()
+
+        cy.get('.error > strong')
+        .should('be.visible')
+        .invoke('text')  // Pegue o texto do elemento
+        .should('eq','Valide os campos obrigatórios!')
+    })
+  
+  })
+
+  describe('Fazendo upload de arquivos', function() {
+
+    it('Seleciona arquivo da pasta fixture', function() {
+        cy.get('#file-upload')
+        .selectFile('cypress/fixtures/example.json')
+        .then((input) => {
+            console.log(input)
+            expect(input[0].files[0].name).to.equal('example.json')
+        })
+    })
+  })
+
+  describe('Lidando com links que abrem em outra aba', function() {
+
+    it('Verifica que a política de privacidade abre em outra aba sem a necessidade de um clique', function() {
+        cy.contains('Política de Privacidade')
+        .should('have.attr', 'target', '_blank')
+    })
+
+    it('Acessa a página da política de privacidade removendo o target e então clicando no link', function() {
+        cy.contains('Política de Privacidade')
+        .invoke('removeAttr', 'target')
+        .click()
+        
+        cy.title().then((title) => {
+            cy.log(`Título da aba do navegador: ${title}`)
+            .should('eq','Central de Atendimento ao Cliente TAT - Política de privacidade')
+        })
+    })
+
+  })
