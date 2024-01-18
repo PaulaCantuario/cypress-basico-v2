@@ -373,3 +373,82 @@ describe('Central de Atendimento ao Cliente TAT', function() {
     })
 
   })
+
+  describe('Utilizando o cy.clock e cy.tick', function() {
+
+    it('Verificando a mensagem de sucesso', function() {
+        cy.clock()
+        cy.fillMandatoryFieldsAndSubmit()
+        cy.contains('.success', 'Mensagem enviada com sucesso')
+        .should('be.visible')
+
+        cy.tick(3000)
+        cy.contains('.success', 'Mensagem enviada com sucesso')
+        .should('not.be.visible')
+    })
+
+    it('Verificando a mensagem de erro', function() {
+        cy.clock()//congela o relógio do navegador
+        cy.get('.button')
+        .click()
+        cy.contains('.error', 'Valide os campos obrigatórios!')
+        .should('be.visible')
+
+        cy.tick(3000)//avança o relógio do navegador
+        cy.contains('.error', 'Valide os campos obrigatórios!')
+        .should('not.be.visible')
+    })
+  })
+
+  describe('Aplicando lodash e invoke', function() {
+    it('Aplicando o _.repeat no campo de texto livre', function () {
+        
+        const longText = Cypress._.repeat('Lore Impsum dolor sit amet.', 20)
+
+        cy.get('#open-text-area')
+        .invoke('val', longText)
+        .should('have.value', longText)
+    })
+  })
+
+  describe('Fazendo requisições HTTP', function () {
+    it('Utilizado cy.request para requisição  do tipo GET', function() {
+        cy.request({
+            method: 'GET',
+            url: 'https://cac-tat.s3.eu-central-1.amazonaws.com/index.html'
+        })
+        .then((response) => {
+            expect(response.status).to.equal(200);
+            expect(response.statusText).to.equal('OK');
+            expect(response.body).contains('CAC TAT');
+
+        })
+    })
+  })
+
+  describe.only('Encontre o gato', function(){
+    it('Apenas verificando que o elemento com id cat existe na página', function() {
+        cy.get('#cat')
+        .should('exist')
+    })
+
+    it('Apenas verificando que o elemento com id cat existe no body response', function() {
+        cy.request({
+            method: 'GET',
+            url: 'https://cac-tat.s3.eu-central-1.amazonaws.com/index.html'
+        })
+        .then((response) => {
+            expect(response.status).to.equal(200);
+            expect(response.statusText).to.equal('OK');
+            expect(response.body).contains('id="cat"');
+
+        })
+    })
+
+    it('Utilizando o invoke para mudar a propriedade do elemento para torna-lo vísivel', function() {
+        cy.get('#cat')
+        .invoke('css', 'display', 'block')
+        .should('be.visible')
+    })
+
+})
